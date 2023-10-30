@@ -1,0 +1,57 @@
+# 2023-09-15
+# «Specifies whether challenge-response authentication is allowed
+# «(e.g. via PAM or though authentication styles supported in `login.conf`).
+# «The default is ''yes''.»
+# https://linux.die.net/man/5/sshd_config
+ChallengeResponseAuthentication no
+# http://fredericiana.com/2009/10/21/keeping-ssh-from-disconnecting-automatically
+# 2023-09-15
+# «Sets a timeout interval in seconds after which if no data has been received from the client,
+# `sshd` will send a message through the encrypted channel to request a response from the client.
+# The default is 0, indicating that these messages will not be sent to the client.
+# This option applies to protocol version 2 only.»
+# https://linux.die.net/man/5/sshd_config
+ClientAliveInterval 20
+# 2023-09-15
+# 1) «Sets the number of client alive messages (see below) which may be sent
+# without `sshd` receiving any messages back from the client.
+# If this threshold is reached while client alive messages are being sent,
+# `sshd` will disconnect the client, terminating the session.
+# It is important to note that the use of client alive messages is very different from `TCPKeepAlive` (below).
+# The client alive messages are sent through the encrypted channel and therefore will not be spoofable.
+# The TCP keepalive option enabled by `TCPKeepAlive` is spoofable.
+# The client alive mechanism is valuable when the client or server depend on knowing when a connection has become inactive.
+# The default value is 3.
+# If `ClientAliveInterval` (see below) is set to 15, and `ClientAliveCountMax` is left at the default,
+# unresponsive SSH clients will be disconnected after approximately 45 seconds.
+# This option applies to protocol version 2 only.»
+# https://linux.die.net/man/5/sshd_config
+# 2) 60 * 24 * 2 * 3 (2 days, 3 times in a minute)
+ClientAliveCountMax 8640
+# 2023-09-15
+# «Specifies a file containing a private host key used by SSH.
+# The default is `/etc/ssh/ssh_host_key` for protocol version 1,
+# and `/etc/ssh/ssh_host_rsa_key` and `/etc/ssh/ssh_host_dsa_key` for protocol version 2.
+# Note that `sshd` will refuse to use a file if it is group/world-accessible.
+# It is possible to have multiple host key files.
+# ''rsa1'' keys are used for version 1 and ''dsa'' or ''rsa'' are used for version 2 of the SSH protocol.»
+# https://linux.die.net/man/5/sshd_config
+HostKey /etc/ssh/ssh_host_dsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_rsa_key
+# 2023-10-29 It is disabled by default in my Ubuntu 22 WSL (unlike my Debian server).
+PermitRootLogin yes
+PrintMotd no
+Subsystem sftp /usr/lib/openssh/sftp-server
+# 2023-09-15
+# 1) «Specifies whether the system should send TCP keepalive messages to the other side.
+# If they are sent, death of the connection or crash of one of the machines will be properly noticed
+# However, this means that connections will die if the route is down temporarily, and some people find it annoying.
+# On the other hand, if TCP keepalives are not sent, sessions may hang indefinitely on the server,
+# leaving ''ghost'' users and consuming server resources.
+# The default is ''yes'' (to send TCP keepalive messages),
+# and the server will notice if the network goes down or the client host crashes.
+# This avoids infinitely hanging sessions.»
+# https://linux.die.net/man/5/sshd_config
+# 2) «If you're using `ClientAliveInterval`, you can disable `TCPKeepAlive`»: https://unix.stackexchange.com/a/329600
+TCPKeepAlive no
